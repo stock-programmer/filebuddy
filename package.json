@@ -1,0 +1,42 @@
+{
+  "name": "filebuddy",
+  "productName": "FileBuddy",
+  "version": "0.1.0",
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/main.js",
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc --noEmit",
+    "start": "npm run build && electron .",
+    "test": "vitest run",
+    "verify:live": "tsx scripts/verify-live.ts",
+    "verify:defaults-live": "tsx scripts/verify-defaults-live.ts --run",
+    "verify:desktop": "npm run build && tsx scripts/verify-desktop.ts",
+    "verify:diff-ui": "tsx scripts/verify-diff-ui.ts"
+  },
+  "dependencies": {
+    "@earendil-works/pi-agent-core": "0.87.1",
+    "@earendil-works/pi-ai": "0.87.1",
+    "@earendil-works/pi-coding-agent": "0.87.1",
+    "adm-zip": "0.6.1",
+    "diff": "8.0.4",
+    "dotenv": "18.0.4",
+    "typebox": "1.3.27"
+  },
+  "devDependencies": {
+    "@types/adm-zip": "0.5.8",
+    "@types/node": "26.6.3",
+    "electron": "44.4.5",
+    "esbuild": "0.28.2",
+    "playwright-core": "1.63.0",
+    "prettier": "3.6.2",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2",
+    "vitest": "5.0.2"
+  }
+}

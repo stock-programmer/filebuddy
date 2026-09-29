@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <title>FileBuddy</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell" id="app">
+      <aside class="sidebar" aria-label="会话和材料">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">FB</span>
+          <div><strong>FileBuddy</strong><span>让文件，井井有条</span></div>
+          <span class="local-tag">本地</span>
+        </div>
+        <button class="new-session" id="new-session" data-testid="new-session">
+          <span aria-hidden="true">＋</span> 新建工作会话
+        </button>
+        <div class="section-heading">
+          <h2>工作会话</h2>
+          <span id="session-count">0</span>
+        </div>
+        <nav class="session-list" id="session-list" aria-label="工作会话"></nav>
+        <section class="materials-section">
+          <div class="section-heading">
+            <h2>本次材料</h2>
+            <span id="item-count">0</span>
+          </div>
+          <div class="import-actions">
+            <button id="add-files" data-testid="add-files" class="small-button">
+              <span aria-hidden="true">＋</span> 文件</button
+            ><button id="add-directory" data-testid="add-directory" class="small-button">
+              <span aria-hidden="true">＋</span> 目录
+            </button>
+          </div>
+          <div class="materials" id="materials"></div>
+          <div class="drop-note"><span aria-hidden="true">↳</span> 也可将文件或目录拖到窗口</div>
+        </section>
+        <div class="workspace-note">
+          <span class="shield-mark" aria-hidden="true">✓</span>
+          <div>
+            <strong>在独立副本中处理</strong>
+            <p>检查结果后，再决定如何保存。</p>
+          </div>
+        </div>
+        <div class="sidebar-footer">
+          <span class="version">FileBuddy / 0.1</span
+          ><button id="delete-session" class="text-button danger-link" data-testid="delete-session">
+            删除会话
+          </button>
+        </div>
+      </aside>
+
+      <main class="conversation">
+        <header class="conversation-header">
+          <div>
+            <div class="eyebrow">YOUR FILE WORKSPACE</div>
+            <h1 id="session-title">用一句话，开始整理</h1>
+          </div>
+          <div class="header-actions">
+            <button
+              id="compact-session"
+              class="icon-text-button"
+              data-testid="compact-session"
+              title="整理历史上下文，保留任务目标和进度"
+            >
+              整理上下文</button
+            ><button
+              id="export-trace"
+              class="icon-text-button"
+              data-testid="export-trace"
+              title="导出运行记录以便复盘"
+            >
+              运行记录 <span aria-hidden="true">↗</span>
+            </button>
+          </div>
+        </header>
+        <div id="warnings" class="warnings" role="status"></div>
+        <section class="message-scroll" id="message-scroll" aria-label="对话内容">
+          <div class="welcome" id="welcome">
+            <div class="welcome-art" aria-hidden="true">
+              <span class="paper back-paper"></span
+              ><span class="paper front-paper"><i></i><i></i><i></i><b>✦</b></span>
+            </div>
+            <div class="eyebrow">FROM MESS TO MEANING</div>
+            <h2>文件交给我，<br />想法留给你。</h2>
+            <p>添加文件或目录，告诉我你想做什么。<br />整理、修改、查找，让每一步都有迹可循。</p>
+            <div class="suggestions">
+              <button data-suggestion="请浏览这些材料，告诉我文件结构和主要内容。">
+                <span>01</span><strong>先看一看</strong><small>梳理结构与主要内容 <b>↗</b></small></button
+              ><button data-suggestion="请检查这些文本文件中的格式问题，并统一标题层级与空白。">
+                <span>02</span><strong>整理文本</strong
+                ><small>统一格式，让内容更清楚 <b>↗</b></small></button
+              ><button data-suggestion="请查找这些材料中的重复内容，先给出整理建议。">
+                <span>03</span><strong>找出重复</strong><small>定位冗余，提出整理建议 <b>↗</b></small>
+              </button>
+            </div>
+          </div>
+          <div class="message-list" id="message-list"></div>
+          <div class="stream-message" id="stream-message" hidden>
+            <div class="message-avatar assistant-avatar">FB</div>
+            <div class="message-body">
+              <div class="message-meta"><strong>FileBuddy</strong><span>正在处理</span></div>
+              <div class="message-text" id="stream-text"></div>
+              <span class="stream-cursor" aria-hidden="true"></span>
+            </div>
+          </div>
+        </section>
+        <div class="run-strip" id="run-strip" hidden>
+          <span class="status-dot" id="status-dot"></span><span id="run-activity"></span
+          ><span class="run-stats" id="run-stats"></span>
+        </div>
+        <div class="composer-area">
+          <div class="composer">
+            <label class="visually-hidden" for="task-input">输入文件处理任务</label
+            ><textarea
+              id="task-input"
+              data-testid="task-input"
+              rows="3"
+              placeholder="告诉我，你想如何处理这些文件…"
+            ></textarea>
+            <div class="composer-bottom">
+              <span class="composer-hint" id="composer-hint">支持持续对话，随时调整要求</span>
+              <div class="composer-actions">
+                <span class="shortcut">Ctrl ↵</span
+                ><button id="stop-run" class="stop-button" data-testid="stop-run" hidden>
+                  <span aria-hidden="true">■</span> 停止</button
+                ><button id="send-task" class="send-button" data-testid="send-task">
+                  开始处理 <span aria-hidden="true">↑</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="model-line">
+            <span><i id="model-dot" class="model-dot"></i><span id="model-name">正在连接模型</span></span
+            ><span class="privacy-note">读取的内容将发送至所选模型服务</span>
+          </div>
+        </div>
+      </main>
+
+      <aside class="results-panel" aria-label="文件处理结果">
+        <header class="results-header">
+          <div>
+            <div class="eyebrow">REVIEW & SAVE</div>
+            <h2>工作成果 <span id="change-count">0</span></h2>
+          </div>
+          <span class="result-mark" aria-hidden="true">↗</span>
+        </header>
+        <div class="results-summary" id="results-summary">每一处变更，都可以检查。</div>
+        <div class="selection-row" id="selection-row" hidden>
+          <label><input id="select-all-changes" type="checkbox" checked />选择可写回的变更</label
+          ><span id="selected-count"></span>
+        </div>
+        <div class="changes-list" id="changes-list"></div>
+        <div class="result-empty" id="result-empty">
+          <div class="empty-icon" aria-hidden="true">≋</div>
+          <strong>成果将在这里呈现</strong>
+          <p>处理后的新增、修改和删除<br />会逐项列出，方便你检查。</p>
+          <div class="result-steps">
+            <span>添加材料</span><i>→</i><span>描述任务</span><i>→</i><span>检查结果</span>
+          </div>
+        </div>
+        <div class="delivery-area">
+          <p id="delivery-note">原文件由你掌握，确认后才会写回。</p>
+          <button id="export-results" class="export-button" data-testid="export-results">
+            导出工作文件 <span aria-hidden="true">↓</span></button
+          ><button id="apply-results" class="apply-button" data-testid="apply-results">
+            将选中变更写回原件</button
+          ><button
+            id="restore-delivery"
+            class="text-button restore-delivery"
+            data-testid="restore-delivery"
+            hidden
+          >
+            恢复最近一次写回前的原件
+          </button>
+        </div>
+      </aside>
+    </div>
+    <div class="drop-overlay" id="drop-overlay" hidden>
+      <div>
+        <span aria-hidden="true">＋</span>
+        <h2>松开，即可添加材料</h2>
+        <p>文件和目录将复制到独立工作区</p>
+      </div>
+    </div>
+    <div class="toast" id="toast" role="status" hidden></div>
+    <dialog id="diff-dialog" class="diff-dialog" aria-labelledby="diff-title">
+      <div class="dialog-heading">
+        <div>
+          <div class="eyebrow">FILE CHANGES</div>
+          <h2 id="diff-title"></h2>
+        </div>
+        <button id="close-diff" class="close-button" aria-label="关闭差异">×</button>
+      </div>
+      <div class="diff-toolbar">
+        <div id="diff-counts" class="diff-counts" aria-label="文件改动行数">
+          <span id="diff-added" class="diff-added-count"></span>
+          <span id="diff-removed" class="diff-removed-count"></span>
+        </div>
+        <span id="diff-status" class="diff-status" role="status"></span>
+      </div>
+      <div class="diff-column-headings">
+        <h3>处理前 <span id="diff-before-format"></span></h3>
+        <h3>处理后 · 当前副本 <span id="diff-after-format"></span></h3>
+      </div>
+      <div id="diff-scroll" class="diff-scroll" tabindex="0" role="region" aria-label="逐行文件差异">
+        <div id="diff-rows" class="diff-rows"></div>
+      </div>
+      <div class="dialog-footer">
+        <span id="diff-note">仅展示文本内容，不执行文件中的代码。</span
+        ><button id="restore-file" class="small-button" data-testid="restore-file">恢复到导入时版本</button>
+      </div>
+    </dialog>
+    <dialog id="confirm-dialog" class="confirm-dialog">
+      <div class="dialog-heading"><h2 id="confirm-title"></h2></div>
+      <p id="confirm-description"></p>
+      <div class="dialog-footer">
+        <button id="confirm-cancel" class="small-button">取消</button
+        ><button id="confirm-ok" class="send-button" data-testid="confirm-ok">确认</button>
+      </div>
+    </dialog>
+    <dialog
+      id="rename-dialog"
+      class="rename-dialog"
+      aria-labelledby="rename-title"
+      aria-describedby="rename-hint"
+    >
+      <form id="rename-form" novalidate>
+        <div class="dialog-heading"><h2 id="rename-title">修改会话名称</h2></div>
+        <div class="rename-fields">
+          <label for="rename-input">会话名称</label>
+          <input
+            id="rename-input"
+            data-testid="rename-input"
+            type="text"
+            autocomplete="off"
+            aria-describedby="rename-hint rename-error"
+          />
+          <p id="rename-hint"></p>
+          <p id="rename-error" class="rename-error" role="alert"></p>
+        </div>
+        <div class="dialog-footer">
+          <button id="rename-cancel" class="small-button" type="button">取消</button>
+          <button id="rename-save" data-testid="rename-save" class="send-button" type="submit">
+            保存名称
+          </button>
+        </div>
+      </form>
+    </dialog>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

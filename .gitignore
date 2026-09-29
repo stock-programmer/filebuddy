@@ -1,0 +1,40 @@
+# Dependencies are restored from package-lock.json.
+node_modules/
+
+# Build output, local caches and test coverage.
+/dist/
+/release/
+.cache/
+/coverage/
+*.tsbuildinfo
+
+# Local secrets. Keep the documented, empty-key template in Git.
+.env
+.env.*
+!.env.example
+
+# Sessions, imported file copies, backups, traces and exported artifacts.
+.my-agent/
+/output/
+/outputs/
+/evidence/
+*.log
+
+# Local development validation notes are not part of the public project.
+/VALIDATION.md
+
+# Default exports saved into the repository and interrupted atomic writes.
+/运行记录*.jsonl
+/trace*.jsonl
+/文件处理结果*.zip
+*.xuwu-*.tmp
+
+# Reviewed public trace example linked from README.
+!/trace运行记录.jsonl
+
+# Machine-specific editor settings and OS files.
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini
